@@ -19,25 +19,25 @@ def road(x):
     # return -3.5  + np.cos(x)
     # return -np.sqrt(17) + np.cos(x)
     # return -np.sqrt(10) + np.cos(x)
-    return -1.887365 - (2./3.)*np.cos(x) + np.sin(x) - 0.5*np.sin(2.*x)
+    # return -1.887365 - (2./3.)*np.cos(x) + np.sin(x) - 0.5*np.sin(2.*x)
 
 def df(y, t): 
     return -1./road(t)
 
 # MAIN COMPUTATION PART 
-tmin, tmax, nbt = 0, 60, 1000
+tmin, tmax, nbt = 0, 20, 100
+xmin, xmax = tmin - tmax/2, tmax + tmax/2
 
-t    = np.linspace(tmin, tmax, nbt)
-ROAD = road(t)
+x = np.linspace(xmin, xmax, nbt)
+t = np.linspace(tmin, xmax, nbt)
 
 theta0 = -np.pi / 2.
 ROAD0  = road(0)
-theta = np.reshape(integrate.odeint(df, theta0, t) , len(t))
-R     = -ROAD
+theta  = np.reshape(integrate.odeint(df, theta0, t) , len(t))
+R      = -road(t)
 
 # PLOT PART 
-xmin = tmin - 10
-xmax = tmax + 1
+ROAD = road(x)
 ymin = np.amin(ROAD) - 1
 if (np.amax(ROAD) > 0): 
     print("Road must stay below zero !")
@@ -53,22 +53,13 @@ plt.axis('equal')
 ax.grid()
 
 ## Plot the road 
-x = np.linspace(xmin, xmax, nbt)
-plt.plot(x, road(x))
+plt.plot(x, ROAD)
 
+## Plot the wheel
 x0 = R * np.cos(theta)
 y0 = R * np.sin(theta)
 
 plt.plot(x0, y0)
-
-# alpha = theta[45]
-# x1 =  np.cos(alpha) * x0 + np.sin(alpha) * y0 + t[45]
-# y1 = -np.sin(alpha) * x0 + np.cos(alpha) * y0 
-
-# plt.plot(x1, y1)
-
-# plt.show()
-# exit()
 
 ## Define the dynamics part
 lines = []
@@ -90,11 +81,12 @@ line, = ax.plot([], [], 'b-')
 lines.append(line)
 
 ## Number of frames
-nb_frames = np.floor((tmax + 0.5) * nbt).astype(int)
+nb_frames = nbt 
 
 # fonction à définir quand blit=True
 # crée l'arrière de l'animation qui sera présent sur chaque image
 def init():
+    lines[3].set_data([],[])
     return lines
 
 def animate(i): 
@@ -122,6 +114,5 @@ def animate(i):
 
     return lines
 
-anim = animation.FuncAnimation(fig, animate, frames = nb_frames, blit = True, init_func = init, repeat = False, interval = 50)
-# anim = animation.FuncAnimation(fig, animate, frames = nb_frames, blit = True, init_func = init, repeat = False, interval = 25)
+anim = animation.FuncAnimation(fig, animate, frames = nb_frames, blit = True, init_func = init, repeat = True, interval = 50)
 plt.show()
