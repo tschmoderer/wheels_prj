@@ -1,4 +1,5 @@
 import os
+import math
 import numpy as np 
 import scipy.integrate as integrate 
 import matplotlib.pyplot as plt
@@ -15,7 +16,19 @@ def road(x):
     except :
         return -1    
     """
-    return -np.sqrt(2)  + np.cos(x)
+    return -0.000000000001 - 0.5*np.sqrt(np.abs(x))
+    return -1 - 0.5*np.sqrt(np.abs(x))
+    mod2 = x % 2. 
+    return -np.sqrt(2)* np.cosh(mod2 - 1) / 2.
+
+    mod2 = x % 2. 
+    mod2_1 = mod2 < 1.
+    mod2_2 = 1 - mod2_1
+
+    
+    return (-2 + mod2)*mod2_1 + (-mod2)*mod2_2
+
+    # return -np.sqrt(2)  + np.cos(x)
     # return -3.5  + np.cos(x)
     # return -np.sqrt(17) + np.cos(x)
     # return -np.sqrt(10) + np.cos(x)
@@ -25,7 +38,7 @@ def df(y, t):
     return -1./road(t)
 
 # MAIN COMPUTATION PART 
-tmin, tmax, nbt = 0, 20, 100
+tmin, tmax, nbt = 0, 20, 500
 xmin, xmax = tmin - tmax/2, tmax + tmax/2
 
 x = np.linspace(xmin, xmax, nbt)
