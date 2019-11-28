@@ -1,61 +1,90 @@
 import numpy as np 
+import matplotlib.pyplot as plt
 
-def derivate(t, x, y):
-    # error here
-    dx = np.gradient(x) 
-    dt = np.gradient(t)
-    dx = np.gradient(x) / np.gradient(t)
-    return - dx / y
-
+""" Create a road for a periodic wheel """
 def periodic_cos(t, n): 
-    return -np.sqrt(1 + np.square(n)) + np.cos(t)
+    return ROAD(t = t, x1 = t, x2 = -np.sqrt(1 + np.square(n)) + np.cos(t))
+
+def cycloidal(t, n):
+    return ROAD(t = t, x1 = t + np.sin(t), x2 = np.cos(t) - 1 - 2*np.square(n)/(2*n + 1))
 
 class ROAD:
-    """Class defining a road: 
+    """ Default Values """
+    __default_t = np.linspace(0., 1., 11)
+    __default_x = np.linspace(0., 1., 11)
+    __default_y = - np.ones(11)
+
+    """
+    Class defining a road: 
     - discrete values (t, x(t), y(t))
-    - """
+    """
+    def __init__(self, t = __default_t, x1 = __default_x, x2 = __default_y):
+        self.__t = t 
+        self.__x = x1
+        self.__y = x2
 
-    def __init__(self, t, x1, x2):
-        self._t = t 
-        self._x = x1
-        self._y = x2
-        self._deriv = derivate(t, x1, x2)
+    # private 
 
-    def _plot_(self):
-        pass
 
-    def _from_wheel(self, w):
-        pass
-    
-    def __repr__(self):
-        return ""
-    
-    def __str__(self):
-        return ""
-    
-    def _get_x(self):
-        return self._x
-    
-    def _get_t(self):
-        return self._t
+    def plot(self, fig = None):
+        xmin, xmax = np.amin(self.__x) - 2, np.amax(self.__x) + 2
+        ymin, ymax = np.amin(self.__y) - 2, np.amax(self.__y) + 2
         
-    def _set_x(self, x_new): 
-        self._x = x_new
-    
-    def _get_y(self):
-        return self._y
-
-    def _get_deriv(self):
-        return self._deriv
+        ## Plot the road 
+        if fig == None:
+            fig = plt.subplot(111, xlim = (xmin, xmax), ylim = (ymin, ymax))
+            fig.grid()
         
-    def _set_y(self, y_new): 
-        self._y = y_new    
+        fig.plot(self.__x, self.__y)
+
+        ## TODO: Plot the extended road 
+        return fig
     
-    def _set_t(self, _t_new):
-        self._t = _t_new
+    # Getters 
+    def __get_t(self):
+        return self.__t
 
+    def __get_x(self):
+        return self.__x
 
-    t = property(_get_t, _set_t)
-    x = property(_get_x, _set_x)
-    y = property(_get_y, _set_y)
-    deriv = property(_get_deriv)
+    def __get_y(self):
+        return self.__y   
+
+    def __get_xy(self): 
+        return np.vstack((self.__x, self.__y))
+    
+    def __get_txy(self): 
+        return np.vstack((self.__t, self.__x, self.__y))
+    
+    # Setters   
+    # Warning: Assume keep the same space curve
+    def __set_t(self, _t_new):
+        self.__t = _t_new
+
+    # Warning: Assume keep the same time discretization and y coordinate
+    def __set_x(self, _x_new): 
+        self.__x = _x_new
+    
+    # Warning: Assume keep the same time discretization and x coordinate
+    def __set_y(self, _y_new): 
+        self.__y = _y_new   
+
+    # Warning: Assume keep the same time discretization
+    def __set_xy(self, _x_new, _y_new):
+        self.__x = _x_new
+        self.__y = _y_new
+
+    def __set_txy(self, _t_new, _x_new, _y_new):
+        self.__t = _t_new
+        self.__x = _x_new
+        self.__y = _y_new
+
+    # public
+    t   = property(__get_t, __set_t)
+    x   = property(__get_x, __set_x)
+    y   = property(__get_y, __set_y)
+    xy  = property(__get_xy, __set_xy)
+    txy = property(__get_txy, __set_txy)
+
+if __name__ == "__main__":
+    pass

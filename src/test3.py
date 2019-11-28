@@ -9,17 +9,30 @@ from wheels import *
 
 def road2wheel(road):
     df = lambda x, tt: np.interp(tt, road.t, road.deriv)
-    w = WHEEL()
-    w.theta  = np.reshape(integrate.odeint(df, -np.pi/2, road.t) , len(road.t))
-    w.r      = -road.y
-    return w
+    wheel = WHEEL()
+    wheel.theta  = np.reshape(integrate.odeint(df, -np.pi/2, road.t) , len(road.t))
+    wheel.r      = -road.y
+    return wheel
 
-t = np.linspace(0, 60, 1001)
-y = -np.sqrt(2) + np.cos(t)
-y = -1.887365 - (2./3.)*np.cos(t) + np.sin(t) - 0.5*np.sin(2.*t)
+def wheel2road(wheel):
+    dg = lambda x, tt: np.interp(tt, wheel.theta, wheel.r)
+    road = ROAD()
+    road.t = wheel.theta
+    road.x = np.reshape(integrate.odeint(dg, 0, wheel.theta) , len(wheel.theta))
+    road.y = -wheel.r
+    road.deriv = derivate(road.t, road.x, road.y)
+    return road
 
-r1 = ROAD(t = t, x1 = t, x2 = y)
+theta = np.linspace(-np.pi/2, 9*np.pi / 2, 101)
+r     = 4*np.sqrt(5 - 4*np.square(np.sin(theta)))
+
+w1 = WHEEL(r = r, theta = theta)
+r1 = wheel2road(w1)
+
 w1 = road2wheel(r1)
+
+t = r1.t
+dt = theta[1]- theta[0]
 
 ## Define the figure, 
 xmin = np.amin(r1.x) - 2
@@ -61,7 +74,7 @@ line, = ax.plot([], [], 'b-')
 lines.append(line)
 
 ## Number of frames
-nb_frames = 1000
+nb_frames = len(w1.theta)
 
 # fonction à définir quand blit=True
 # crée l'arrière de l'animation qui sera présent sur chaque image
@@ -70,10 +83,10 @@ def init():
     return lines
 
 def animate(i): 
-    time = t[i]
-    ROAD0 = r1.y[0]
+    time   = t[i]
+    ROAD0  = r1.y[0]
     theta0 = -np.pi/2
-    alpha = w1.theta[i]
+    alpha  = w1.theta[i]
 
     # compute the wheel
     x1 =  np.cos(alpha-theta0) * x0 + np.sin(alpha-theta0) * y0 + time
