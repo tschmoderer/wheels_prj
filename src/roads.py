@@ -23,9 +23,6 @@ class ROAD:
         self.__x = x1
         self.__y = x2
 
-    # private 
-
-
     def plot(self, fig = None):
         xmin, xmax = np.amin(self.__x) - 2, np.amax(self.__x) + 2
         ymin, ymax = np.amin(self.__y) - 2, np.amax(self.__y) + 2

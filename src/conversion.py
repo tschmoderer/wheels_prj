@@ -1,5 +1,7 @@
 import numpy as np
-import scipy.integrate as integrate 
+from scipy.integrate import odeint
+from scipy.interpolate import interp1d
+
 
 def polar2cartesian(r, t):
     x = r * np.cos(t)
