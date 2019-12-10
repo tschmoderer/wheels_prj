@@ -62,6 +62,7 @@ else:
 ## Define the figure, 
 fig = plt.figure()
 ax  = fig.add_subplot(111, autoscale_on = False, xlim = (xmin, xmax), ylim = (ymin, ymax))
+
 plt.axis('equal')
 ax.grid()
 
